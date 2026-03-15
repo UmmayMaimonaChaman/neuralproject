@@ -1,6 +1,9 @@
 import sys
 import os
-sys.path.insert(0, os.getcwd())
+# Add project root to path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, project_root)
+os.chdir(project_root)
 try:
     from src.generation.generate_music import run_full_generation
     from src.evaluation.metrics import print_evaluation_table
