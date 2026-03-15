@@ -1,0 +1,35 @@
+# Environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data (exclude large/raw files, only keep dataset info)
+data/raw_midi/*
+!data/raw_midi/dataset.md
+
+# Explanations and generated pdfs/reports
+project_explanation.txt
+*.pdf
+out_table_utf8.txt
+
+# Report (exclude intermediate build files, only keep src)
+report/*.aux
+report/*.log
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
+report/*.out
+report/*.bbl
+report/*.blg
