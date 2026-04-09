@@ -11,7 +11,17 @@ import torch
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.style.use('seaborn-v0_8-bright') # Colorful white background
+import matplotlib.pyplot as plt
+# Academic plotting style
+plt.rcParams.update({
+    'font.family': 'serif',
+    'font.size': 10,
+    'figure.facecolor': 'white',
+    'axes.facecolor': 'white',
+    'axes.edgecolor': 'black',
+    'axes.grid': True,
+    'grid.alpha': 0.3
+})
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from src.config import (SEQUENCE_LENGTH, NUM_PITCHES, NUM_GENRES, GENRES,

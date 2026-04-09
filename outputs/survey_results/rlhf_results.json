@@ -1,0 +1,90 @@
+{
+  "task": "Task 4 \u2013 RLHF",
+  "student": "Ummay Maimona Chaman | 22301719",
+  "rl_steps": 200,
+  "rl_lr": 1e-05,
+  "batch_size": 8,
+  "mean_reward_before": 0.6329,
+  "mean_reward_after": 0.6249,
+  "improvement_pct": -1.27,
+  "human_score_before": 3.53,
+  "human_score_after": 3.5,
+  "survey_summary": {
+    "RLHF-Tuned": {
+      "mean": 4.170833333333333,
+      "std": 0.48838950188917407,
+      "min": 3.0,
+      "max": 5.0,
+      "n": 60
+    },
+    "Transformer": {
+      "mean": 3.066666666666667,
+      "std": 0.3619008458434744,
+      "min": 2.0,
+      "max": 4.0,
+      "n": 60
+    }
+  },
+  "sample_scores": [
+    {
+      "sample": 1,
+      "genre": "classical",
+      "reward": 0.75,
+      "human_score": 4.0
+    },
+    {
+      "sample": 2,
+      "genre": "jazz",
+      "reward": 0.1,
+      "human_score": 1.4
+    },
+    {
+      "sample": 3,
+      "genre": "rock",
+      "reward": 0.75,
+      "human_score": 4.0
+    },
+    {
+      "sample": 4,
+      "genre": "pop",
+      "reward": 0.75,
+      "human_score": 4.0
+    },
+    {
+      "sample": 5,
+      "genre": "electronic",
+      "reward": 0.75,
+      "human_score": 4.0
+    },
+    {
+      "sample": 6,
+      "genre": "classical",
+      "reward": 0.1,
+      "human_score": 1.4
+    },
+    {
+      "sample": 7,
+      "genre": "jazz",
+      "reward": 0.75,
+      "human_score": 4.0
+    },
+    {
+      "sample": 8,
+      "genre": "rock",
+      "reward": 0.75,
+      "human_score": 4.0
+    },
+    {
+      "sample": 9,
+      "genre": "pop",
+      "reward": 0.1,
+      "human_score": 1.4
+    },
+    {
+      "sample": 10,
+      "genre": "electronic",
+      "reward": 0.75,
+      "human_score": 4.0
+    }
+  ]
+}

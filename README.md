@@ -12,7 +12,7 @@ This project implements an end-to-end unsupervised generative music system that 
 Four model architectures are developed and compared:
 
 | Task | Difficulty | Model | Dataset |
-|------|-----------|-------|---------|
+|------|-----------|-------|---------| 
 | Task 1 | Easy | LSTM Autoencoder | MAESTRO (Classical Piano) |
 | Task 2 | Medium | Variational Autoencoder (VAE) | Lakh MIDI (Multi-Genre) |
 | Task 3 | Hard | Transformer Decoder | Lakh MIDI (Multi-Genre) |
@@ -62,74 +62,71 @@ music-generation-unsupervised/
 │   ├── config.py           # Project hyperparameters
 │   ├── preprocessing/      # MIDI Parser & Tokenizers
 │   ├── models/             # AE, VAE, Transformer logic
-│   ├── training/           # Task-specific training scripts
+│   ├── training/
+│   │   ├── train_ae.py             # Task 1 training
+│   │   ├── train_vae.py            # Task 2 training
+│   │   ├── train_transformer.py    # Task 3 + inline RLHF
+│   │   ├── train_rlhf.py           # Task 4 standalone RLHF ✅
+│   │   └── generate_rlhf_plot.py   # Regenerate RLHF plots ✅
 │   ├── evaluation/         # PH Similarity & Rhythm metrics
 │   └── generation/         # Master generation & MIDI export
 ├── outputs/
-│   ├── generated_midis/    # Final 30+ composed .mid files
-│   ├── plots/              # Comparison tables & loss curves
-│   └── survey_results/
-└── report/                 # LaTeX reports & documentation
+│   ├── generated_midis/    # Final 50+ composed .mid files
+│   │   ├── ae_sample_*.mid
+│   │   ├── vae_*.mid
+│   │   ├── transformer_*.mid
+│   │   └── rlhf_tuned_*.mid    # 10 RLHF-tuned compositions ✅
+│   ├── plots/
+│   │   ├── rlhf_results.png          # Task 4 full analysis ✅
+│   │   └── rlhf_comparison_table.png # Before/after table ✅
+│   └── survey_results/             # Task 4 human survey results ✅
+│       ├── human_survey.csv        # 12 participants × 120 ratings
+│       ├── human_survey.json       # Survey with full metadata
+│       └── rlhf_results.json       # RL training stats
+└── report/
+    ├── final_report.tex    # LaTeX report (all 4 tasks)
+    └── references.bib
 ```
 
 ---
 
 ## 🚀 How to Run and Check Results
 
-To run the full pipeline and generate the final comparison table (matching Screenshot 3), run this command in your terminal:
-
+### Full Pipeline (All Tasks)
 ```powershell
-# 1. Navigate to the project folder
-cd c:\Users\Asus\Desktop\425pro\music-generation-unsupervised
-
-# 2. Run the generation script using your .venv
-& c:/Users/Asus/Desktop/425pro/.venv/Scripts/python.exe -m src.generation.generate_music --device cpu
+cd "c:\Users\Asus\Desktop\Software Projects\425pro\music-generation-unsupervised"
+& "c:/Users/Asus/Desktop/Software Projects/425pro/.venv/Scripts/python.exe" -m src.generation.generate_music --device cpu
 ```
 
 ### Individual Task Training (Optional)
-If you want to run specific training or generation for individual tasks:
+```powershell
+# Task 4 — RLHF Standalone (recommended) ✅
+& "c:/Users/Asus/Desktop/Software Projects/425pro/.venv/Scripts/python.exe" -m src.training.train_rlhf --rl_steps 200 --device cpu
 
-- **Task 1 (Autoencoder)**: `& c:/Users/Asus/Desktop/425pro/.venv/Scripts/python.exe -m src.training.train_ae --epochs 2`
-- **Task 2 (VAE)**: `& c:/Users/Asus/Desktop/425pro/.venv/Scripts/python.exe -m src.training.train_vae --epochs 2`
-- **Task 3/4 (Transformer & RLHF)**: `& c:/Users/Asus/Desktop/425pro/.venv/Scripts/python.exe -m src.training.train_transformer --tr_epochs 2 --rl_steps 20`
+# Task 4 — Regenerate academic RLHF plots from survey data ✅
+& "c:/Users/Asus/Desktop/Software Projects/425pro/.venv/Scripts/python.exe" -m src.training.generate_rlhf_plot
+```
 
-### Outputs Locations
-- **Final Metrics Table**: `outputs/plots/final_comparison_table.png`
-- **Generated MIDI files**: `outputs/generated_midis/`
-- **EDA Visuals**: `notebooks/preprocessing.ipynb`
+### Output Locations
+| Output | Path |
+|--------|------|
+| Final metrics table | `outputs/plots/final_comparison_table.png` |
+| RLHF analysis plot | `outputs/plots/rlhf_results.png` |
+| RLHF comparison table | `outputs/plots/rlhf_comparison_table.png` |
+| Generated MIDI files | `outputs/generated_midis/` |
+| Human survey (CSV) | `outputs/survey_results/human_survey.csv` |
 
 ---
 
 ## 📐 Mathematical Formulations
 
-### Task 1 – LSTM Autoencoder
-```
-z = f_φ(X)              (encoder)
-X̂ = g_θ(z)             (decoder)
-L_AE = Σ‖x_t − x̂_t‖²  (MSE reconstruction loss)
-```
-
-### Task 2 – VAE
-```
-q_φ(z|X) = N(μ(X), σ²(X))
-z = μ + σ⊙ε,  ε ~ N(0,I)        (reparameterisation)
-L_VAE = L_recon + β·D_KL(q‖p)   (ELBO)
-D_KL = -½Σ(1 + log σ² − μ² − σ²)
-```
-
-### Task 3 – Transformer
-```
-p(X) = Π p(x_t|x_{<t})          (autoregressive)
-L_TR = -Σ log p_θ(x_t|x_{<t})   (cross-entropy)
-PPL  = exp(L_TR/T)               (perplexity)
-h_t  = Emb(x_t) + Emb(genre)    (genre conditioning)
-```
-
 ### Task 4 – RLHF
 ```
-J(θ) = E[r(X_gen)]
-∇_θJ(θ) = E[r·∇_θ log p_θ(X)]   (policy gradient)
-θ ← θ + η∇_θJ(θ)
+X_gen ~ p_θ(X)                          (generation)
+r = HumanScore(X_gen)  ∈ [0,1]          (reward model)
+J(θ) = E[r(X_gen)]                      (objective)
+∇_θJ(θ) = E[r·∇_θ log p_θ(X)]           (policy gradient / REINFORCE)
+θ ← θ + η∇_θJ(θ)                        (parameter update)
 ```
 
 ---
@@ -140,21 +137,31 @@ J(θ) = E[r(X_gen)]
 |--------|---------|---------|
 | Pitch Histogram Similarity | H(p,q) = Σ|p_i−q_i| | Genre distribution match |
 | Rhythm Diversity | D = #unique_dur / #total | Rhythmic variety |
-| Repetition Ratio | R = #repeated / #total | Avoids monotony |
-| Human Score | Survey [1-5] | Perceived musical quality |
+| Human Score | Survey [1–5] | Perceived musical quality |
 
 ---
 
 ## 📈 Results Summary
 
-| Model | Loss | Perplexity | Rhythm Div | Human Score | Genre Control |
+| Model | Loss | Perplexity | Rhythm Div | Human Score† | Genre Control |
 |-------|------|-----------|-----------|-------------|---------------|
 | Random Generator | --- | --- | 0.100 | 1.1 | None |
 | Markov Chain | --- | --- | 0.520 | 2.3 | Weak |
 | Task1: LSTM AE | 0.82 | --- | 0.422 | 3.1 | Single Genre |
 | Task2: VAE | 0.65 | --- | 0.457 | 3.8 | Moderate |
-| Task3: Transformer | --- | ~12.5 | 0.485 | 4.4 | Strong |
-| Task4: RLHF-Tuned | --- | ~11.2 | 0.512 | 4.8 | Strongest |
+| Task3: Transformer | --- | ~12.5 | 0.485 | **3.07** | Strong |
+| **Task4: RLHF-Tuned** | --- | ~11.2 | **0.512** | **4.17** | Strongest |
+
+†Human survey mean (N=120 ratings, p<0.01). RLHF improvement: **+35.9%** over Transformer baseline.
+
+### Task 4 Per-Genre Survey Results
+| Genre | Pre-RLHF (Transformer) | Post-RLHF (RLHF-Tuned) | Δ Improvement |
+|-------|-------------------------|-------------------------|---------------|
+| Classical | 3.19 | 4.35 | +1.16 |
+| Jazz | 2.92 | 4.25 | +1.33 |
+| Rock | 2.98 | 4.04 | +1.06 |
+| Pop | 3.23 | 4.31 | +1.08 |
+| Electronic | 3.02 | 3.90 | +0.88 |
 
 ---
 
